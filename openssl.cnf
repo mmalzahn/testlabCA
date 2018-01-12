@@ -9,7 +9,7 @@ serial			= $dir/serial
 database		= $dir/index.txt
 new_certs_dir		= $dir/newcerts
 certificate		= $dir/cacert.pem
-private_key		= $dir/private/cakey2.pem
+private_key		= $dir/private/cakey.pem
 default_days		= 365
 default_md		= md5
 preserve		= no
@@ -54,12 +54,12 @@ commonName_max		= 64
 # Default values for the above, for consistency and less typing.
 # Variable name			  Value
 #------------------------------	  ------------------------------
-0.organizationName_default	= Malzahn Consulting
-organizationalUnitName_default = Testlab
-emailAddress_default		= matthias@malzahn.kim
-localityName_default		= Berlin
-stateOrProvinceName_default	= Berlin
-countryName_default		= DE
+#0.organizationName_default	= Malzahn Consulting
+#organizationalUnitName_default = Testlab
+#emailAddress_default		= 
+#localityName_default		= Berlin
+#stateOrProvinceName_default	= Berlin
+#countryName_default		= DE
 
 [ v3_ca ]
 basicConstraints	= CA:TRUE
