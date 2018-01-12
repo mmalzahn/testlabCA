@@ -1,33 +1,21 @@
 ﻿Param
 (
-    [Parameter(Mandatory=$true,
-                ValueFromPipelineByPropertyName=$true,
-                Position=0)]
+    [Parameter(Mandatory=$true)]
     $CAname,
     [Parameter(Mandatory=$true)]
-    $country = "DE",
+    $country,
     [Parameter(Mandatory=$true)]
-    $state = "Berlin",
+    $state,
     [Parameter(Mandatory=$true)]
-    $city = "Berlin",
+    $city,
     [Parameter(Mandatory=$true)]
-    $organisation = "Malzahn Consulting",
+    $organisation,
     [Parameter(Mandatory=$true)]
-    $department = "Testlab",
-    [Parameter(Mandatory=$true)]
-    $email = "matthias@malzahn.kim"
+    $department,
+    [Parameter(Mandatory=$false)]
+    $email
 )
+$subjStr = "/C=" + $country + `           "/ST="+$state + `           "/L=" + $city + `           "/O="+ $organisation + `           "/emailAddress="+ $email +`           "/OU=" + $department + `           "/CN=" + $Hostname
+
 openssl req -new `            -x509 `            -extensions v3_ca `            -keyout private/cakey.pem `            -out cacert.pem `            -days 3650 `            -config openssl.cnf `
-            -subj $("/C=DE/ST=Berlin/L=Berlin/O=Malzahn Consulting/emailAddress=matthias@malzahn.kim/OU=" + $OrgName + "/CN="+$Hostname) `
-
-openssl req -new `
-            -nodes `
-            -extensions SAN `
-            -reqexts SAN `
-            -out $('.\requests\' + $Hostname + '-req.pem') `
-            -keyout $($hostpath.FullName + '\' + $Hostname + "-key.pem") `
-            -config $($hostpath.FullName + "\openssl.cnf") `
-            -subj $("/C=DE/ST=Berlin/L=Berlin/O=Malzahn Consulting/emailAddress=matthias@malzahn.kim/OU=" + $OrgName + "/CN="+$Hostname) `
-            -batch
-
-git add *git commit -m $('ADD Cert for ' + $Hostname)
+            -subj $subjStr
