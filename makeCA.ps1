@@ -15,7 +15,7 @@
     [Parameter(Mandatory=$false)]
     $email
 )
-$subjStr = "/C=" + $country + `           "/ST="+$state + `           "/L=" + $city + `           "/O="+ $organisation + `           "/emailAddress="+ $email +`           "/OU=" + $department + `           "/CN=" + $Hostname
+$subjStr = "/C=" + $country + `           "/ST="+$state + `           "/L=" + $city + `           "/O="+ $organisation + `           "/emailAddress="+ $email +`           "/OU=" + $department + `           "/CN=" + $CAname
 
 openssl req -new `            -x509 `            -extensions v3_ca `            -keyout private/cakey.pem `            -out cacert.pem `            -days 3650 `            -config openssl.cnf `
             -subj $subjStr
