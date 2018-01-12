@@ -45,4 +45,4 @@ Copy-Item -Path $($hostpath.FullName + '\' + $Hostname + ".pem") -Destination $(
 Copy-Item .\cacert.pem $($certpath.FullName + '\cacert.pem')
 Copy-Item -Path $($hostpath.FullName + '\' + $Hostname + "-key.pem") -Destination $($certpath.FullName + '\key.pem')
 
-Compress-Archive -Path $certpath.FullName `                 -DestinationPath $($hostpath.FullName + '\certpack.zip') `                 -CompressionLevel Optimal
+Compress-Archive -Path $($certpath.FullName + '\*') `                 -DestinationPath $($hostpath.FullName + '\certpack.zip') `                 -CompressionLevel Optimalgit add *git commit -m $('ADD Cert for ' + $Hostname)
