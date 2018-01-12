@@ -4,20 +4,54 @@
                 ValueFromPipelineByPropertyName=$true,
                 Position=0)]
     $Hostname,
-    $ip = "192.168.178.151",
-    $OrgName = "Testlab"
+    $IPs = @(),
+    [Parameter(Mandatory=$true)]
+    $country = "DE",
+    [Parameter(Mandatory=$true)]
+    $state,
+    [Parameter(Mandatory=$true)]
+    $city,
+    [Parameter(Mandatory=$true)]
+    $organisation,
+    [Parameter(Mandatory=$true)]
+    $department,
+    [Parameter(Mandatory=$true)]
+    $email,
+    $dnsprefix = @()
 )
 $hostpath = New-Item -Path .\hostcerts -Name $Hostname -ItemType directory
 
-$txt = "`n[SAN]`nsubjectAltName=DNS:" + $Hostname + ".fritz.box,DNS:" + $Hostname + ".mm.intra"
-
-if($ip)
+if(($IPs.count -gt 0) -or ($dnsprefix.count -gt 0))
 {
-    $txt = $txt + ",IP:" + $ip
+    $txt = "`n[SAN]`nsubjectAltName="
+    $firstrun = $true
+
+    foreach ($pref in $dnsprefix)
+    {
+        if(-not $firstrun)
+        {
+            $txt +=','
+        }
+
+        $txt += 'DNS:' + $Hostname + '.' + $pref
+    }
+
+    foreach ($ip in $IPs)
+    {
+        if(-not $firstrun)
+        {
+            $txt +=','
+        }
+
+        $txt += 'IP:' + $ip
+    }
 }
+
 
 Copy-Item .\openssl.cnf $hostpath.FullName
 Add-Content -Path $($hostpath.FullName + "\openssl.cnf") -Value $txt
+
+$subjStr = "/C=" + $country + `           "/ST="+$state + `           "/L=" + $city + `           "/O="+ $organisation + `           "/emailAddress="+ $email +`           "/OU=" + $department + `           "/CN="+$Hostname
 
 openssl req -new `
             -nodes `
@@ -26,7 +60,7 @@ openssl req -new `
             -out $('.\requests\' + $Hostname + '-req.pem') `
             -keyout $($hostpath.FullName + '\' + $Hostname + "-key.pem") `
             -config $($hostpath.FullName + "\openssl.cnf") `
-            -subj $("/C=DE/ST=Berlin/L=Berlin/O=Malzahn Consulting/emailAddress=matthias@malzahn.kim/OU=" + $OrgName + "/CN="+$Hostname) `
+            -subj $subjStr `
             -batch
 
 openssl ca -out $($hostpath.FullName + '\' + $Hostname + '-tmp.pem') `
@@ -45,4 +79,4 @@ Copy-Item -Path $($hostpath.FullName + '\' + $Hostname + ".pem") -Destination $(
 Copy-Item .\cacert.pem $($certpath.FullName + '\cacert.pem')
 Copy-Item -Path $($hostpath.FullName + '\' + $Hostname + "-key.pem") -Destination $($certpath.FullName + '\key.pem')
 
-Compress-Archive -Path $($certpath.FullName + '\*') `                 -DestinationPath $($hostpath.FullName + '\certpack.zip') `                 -CompressionLevel Optimalgit add *git commit -m $('ADD Cert for ' + $Hostname)
+Compress-Archive -Path $($certpath.FullName + '\*') `                 -DestinationPath $('clientpacks\'+$Hostname+'.zip') `                 -CompressionLevel Optimal
